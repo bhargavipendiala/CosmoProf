@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Results - {{browser}}</title>
+
+    <style>
+        html, body {
+            font-family: Arial,sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header, .testSummary {
+            display: none;
+        }
+        header, .totalResults {
+            display: none
+        }
+        header, .detailtestreport {
+            display: block;
+        }
+        h1, .totalResults{
+            display: none;
+        }
+        h1:first-child,
+        .totalResults:first-child {
+            display:block;
+        }
+        hr {
+            margin-bottom: 20px;
+        }
+        .center {
+            margin: auto;
+            width: 50%;
+            padding: 10px;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        td,th {
+            padding: 7px;
+            border-top: none;
+            border-left: 1px black solid;
+            border-bottom: 1px black solid;
+            border-right: none;
+        }
+        .tablecolor tr:nth-child(even) {
+            background-color: #EEE;
+        }
+
+        td.pass { color: #003b07; background: #86e191; }
+        td.skip { color: #7d3a00; background: #ffd24a; }
+        td.fail { color: #5e0e00; background: #ff9c8a; }
+
+        tr:last-child       { border-top: 1px black solid; }
+        tr:last-child td    { border-top: 1px black solid; }
+        tr:first-child td   { border-top: 1px black solid; }
+        td:last-child       { border-right: 1px black solid; }
+
+        tr.overview td      { padding-bottom: 0px; border-bottom: none; }
+        tr.overview.last td { padding-bottom: 3px; }
+
+        .suite { cursor: pointer; }
+        .suite > .toggle-assertions { display: none; font-weight: normal; margin-left: 2px; }
+
+        ul.assertions     { list-style-type: none; }
+        span.error      { color: #AD2B2B; }
+        span.success    { color: #53891E; }
+
+        .stacktrace { display: inline; }
+        .stacktrace code { display: none; }
+
+    </style>
+</head>
+
+<body>
+
+<div style="float: left; width: 100%; padding-left: 125px; padding-right: 125px">
+    <header class ="summary" style="display: none">
+        <div style="margin-bottom: 20px">
+            <h2>Test Summary</h2>
+        </div>
+        <div style="margin-bottom: 20px">
+            <strong>URL:</strong> {{launchUrl}}
+        </div>
+        <div style="margin-bottom: 20px">
+            <strong>Browser:</strong> {{browser}}
+        </div>
+        <div style="margin-bottom: 20px">
+            <strong>Start Date/Time:</strong> {{timestamp}}
+        </div>
+        <table style="margin-bottom: 30px;border: 1px black solid;text-align: left;">
+            <tr>
+                <th>Total No of Test cases Executed</th>
+                <td><span class="totalCount"></span></td>
+            </tr>
+            <tr>
+                <th>Total No of Test cases Passed</th>
+                <td><span class="totalPassedCount"></span</td>
+            </tr>
+            <tr>
+                <th>Total No of Test cases Failed</th>
+                <td><span class="totalFailedCount"></span</td>
+            </tr>
+            <tr>
+                <th>Total No of Test cases Skipped</th>
+                <td><span class="totalSkippedCount"></span</td>
+            </tr>
+        </table>
+        <table class="tablecolor">
+            <thead>
+            <tr>
+            <tr style="background-color: #f2f2f2;border: 1px black solid;text-align: left">
+                <th>S.No</th>
+                <th>Scenario</th>
+                <th>Total Testcase</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Errors</th>
+            </tr>
+            </thead>
+            <tbody class="testList"></tbody>
+        </table>
+    </header>
+
+    <div class="testSummary" style="display: none;text-align: left">
+
+        <span class="totalPassed">{{results.passed}}</span>
+        <span class="totalFailed">{{results.failed}}</span>
+        <span class="totalErrors">{{results.errors}}</span>
+
+        {{#each results.modules}}
+            <span class="resultScenario">{{@key}}</span>
+            {{#each this.completed}}
+                <span class="assertionCount">{{this.assertions.length}}</span>
+            {{/each}}
+            <hr>
+        {{/each}}
+    </div>
+    <header class="totalResults">
+        <h1>Test Results</h1>
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tr class="overview">
+                <td colspan="3" title="{{browser}}"><strong>Browser:</strong> {{browser}}</td>
+            </tr>
+            <tr class="overview">
+                <td colspan="3"><strong>Timestamp:</strong> {{timestamp}}</td>
+            </tr>
+            <tr>
+                <td class="pass"><span class="passCount"></span> passed</td>
+                <td class="skip"><span class="skipCount"></span> errors</td>
+                <td class="fail"><span class="failCount"></span> failures</td>
+            </tr>
+        </table>
+    </header>
+
+    <header class="detailtestreport" style="margin-top: 20px">
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tr class="overview">
+                <td colspan="3" title="{{browser}}"><strong>Browser:</strong> {{browser}}</td>
+            </tr>
+            <tr class="overview">
+                <td colspan="3"><strong>Timestamp:</strong> {{timestamp}}</td>
+            </tr>
+            <tr class="overview last">
+                <td colspan="3"><strong>Tests:</strong> {{results.tests}}<br></td>
+            </tr>
+            <tr>
+                <td class="pass"><strong>{{results.passed}}</strong> passed</td>
+                <td class="skip"><strong>{{results.errors}}</strong> errors</td>
+                <td class="fail"><strong>{{results.failed}}</strong> failures</td>
+            </tr>
+        </table>
+
+        {{#each results.modules}}
+            <h2>{{@key}}</h2>
+            {{#each this.completed}}
+                <h3 class="suite">{{@key}} <span class="toggle-assertions"></span></h3>
+
+                <ul class="assertions">
+                    {{#each this.assertions}}
+                        <li>
+                            {{#if failure}}
+                                <span class="error">&#10006;</span>
+                            {{else}}
+                                <span class="success">&#10004;</span>
+                            {{/if}}
+
+                            {{this.message}}
+
+                            {{#if this.failure}}
+                                {{this.failure}}
+                            {{/if}}
+
+                            {{#if this.stacktrace}}
+                                <div class="stacktrace">
+                                    <a href="#">view stacktrace</a>
+                                    <code><pre>{{this.stacktrace}}</pre></code>
+                                </div>
+                            {{/if}}
+                        </li>
+                    {{/each}}
+                </ul>
+
+                <p>
+                    {{#if this.failed}}
+                        <span class="error"><strong>FAILED:</strong></span>
+                        <span class="error"><strong>{{this.failed}}</strong></span> assertions failed and
+                        <span class="success"><strong>{{this.passed}}</span></strong> passed. ({{this.time}}s)
+                    {{else}}
+                        <span class="success"><strong>OK.</strong></span>
+                        <span class="success"><strong>{{this.passed}}</strong></span> assertions passed. ({{this.time}}s)
+                    {{/if}}
+                </p>
+            {{/each}}
+
+            {{#if this.skipped}}
+                <h4>skipped</h4>
+                <ul>
+                    {{#each this.skipped}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            {{/if}}
+
+            <hr>
+        {{/each}}
+    </header>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script>
+        var html = "";
+        var i = 0;
+        var totalPassedCount = 0;
+        var totalCount = 0;
+        var totalFailedCount = 0;
+        var totalSkippedCount = 0;
+        $(".testSummary").each(function() {
+            i++;
+            var scenario = $(this).children(".resultScenario").html();
+            var sum = 0;
+            $(this).children(".assertionCount").each(function(){
+                sum += parseInt($(this).text());
+            });
+
+            totalPassedCount += parseInt($(this).children(".totalPassed").html());
+            totalFailedCount += parseInt($(this).children(".totalFailed").html());
+            totalSkippedCount += parseInt($(this).children(".totalErrors").html());
+            totalCount = parseInt(totalPassedCount + totalFailedCount + totalSkippedCount);
+
+
+            html += "<tr>";
+            html += "<td>" + i + "</td>";
+            html += "<td>" + scenario + "</td>";
+            html += "<td>" + sum + "</td>";
+            html += "<td>" + $(this).children(".totalPassed").html() + "</td>";
+            html += "<td>" + $(this).children(".totalFailed").html() + "</td>";
+            html += "<td>" + $(this).children(".totalErrors").html() + "</td>";
+            html += "</tr>";
+        });
+
+        $(".testList").html(html);
+        $(".totalCount").html(totalCount);
+        $(".totalPassedCount").html(totalPassedCount);
+        $(".totalFailedCount").html(totalFailedCount);
+        $(".totalSkippedCount").html(totalSkippedCount);
+        $(".summary").first().show();
+    </script>
+    <script>
+        $(function() {
+            $('div.stacktrace').on('click', 'a', function(evt) {
+                evt.preventDefault();
+
+                var $link = $(this);
+                var $code = $link.parent().find('code');
+
+                $code.toggle();
+
+                $code.is(':visible') ? $link.text('hide stacktrace'):
+                        $link.text('view stacktrace');
+            });
+
+            function toggleAssertions(element) {
+                if ( $(element).next('ul.assertions').is(':visible') ) {
+                    $(element).find('span.toggle-assertions').text('-');
+                } else {
+                    $(element).find('span.toggle-assertions').text('+');
+                }
+            }
+
+            $('#expand-collapse-all').on('click', function(evt) {
+                $('ul.assertions').toggle();
+            });
+
+            $(".totalResults").first().show();
+
+            var passCount = 0;
+            $(".pass strong").each(function() {
+                passCount = passCount + parseInt($(this).html());
+            });
+
+            $(".totalResults .passCount").html(passCount);
+
+
+            var failCount = 0;
+            $(".fail strong").each(function() {
+                failCount = failCount + parseInt($(this).html());
+            });
+
+            $(".totalResults .failCount").html(failCount);
+
+            var skipCount = 0;
+            $(".skip strong").each(function() {
+                skipCount = skipCount + parseInt($(this).html());
+            });
+
+            $(".totalResults .skipCount").html(skipCount);
+
+        });
+    </script>
+</div>
+</body>
+</html>

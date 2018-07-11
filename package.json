@@ -1,0 +1,29 @@
+{
+  "name": "Sallybeauty",
+  "version": "1.0.0",
+  "description": "Sallybeauty Test Automation",
+  "engines": {
+    "node": ">= 6.9.1"
+  },
+  "author": "ThiDiff",
+  "license": "",
+  "devDependencies": {
+    "@thidiff/eslint-config": "1.0.6",
+    "canvas": "^1.6.5",
+    "dotenv": "^2.0.0",
+    "eslint": "2.13.1",
+    "minimist": "^1.2.0",
+    "mocha": "2.5.3",
+    "nightwatch": "^0.9.14",
+    "random-js": "^1.0.8",
+    "resemble": "^1.4.0",
+    "selenium-server-standalone": "2.53.1",
+    "selenium-standalone": "^5.11.2",
+    "selenium-webdriver": "^3.3.0",
+    "handlebars":"4.0.8"
+  },
+  "scripts": {
+    "test": "nightwatch tests --reporter html-reporter.js",
+    "lint": "echo ESLint: && ./node_modules/.bin/eslint -v && ./node_modules/.bin/eslint . --ignore-path .gitignore"
+  }
+}

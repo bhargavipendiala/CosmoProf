@@ -1,0 +1,6 @@
+{
+  "extends": "@loxa/eslint-config-loxa",
+  "rules": {
+    "strict": 0
+  }
+}
